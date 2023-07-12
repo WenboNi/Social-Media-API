@@ -20,9 +20,11 @@ module.exports = {
       if (!user) {
         return res.status(404).json({ message: 'No user with such ID found!' });
       }
+      console.log(user);
       res.json(user);
     } catch (err) {
-      res.status(500).json(err);
+        console.log(err);
+        res.status(500).json(err);
     }
   },
   // create a new user

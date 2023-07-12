@@ -64,21 +64,27 @@ module.exports = {
           if (!thought) {
             return res.status(404).json({ message: 'No thought with this id can be found!' });
           };
+          const updatedUser = await User.findOneAndUpdate({thoughts: req.params.thoughtId}, { $pull: { thoughts: req.params.thoughtId } },{ new: true });
+          if (!updatedUser) {
+            return res.status(404).json({ message: 'Thought deleted but no associated user found' })
+          }
           res.json({ message: 'Thought has been deleted!' });
         } catch (err) {
-          res.status(500).json(err);
+            console.log(err)
+            res.status(500).json(err);
         }
       },
       // Add a reaction stored in a single thought's reactions array field
       async addReaction(req,res){
         try{
-          const reaction = await Thought.findByIdAndUpdate({_id:req.params.userId},
+          const reaction = await Thought.findByIdAndUpdate({_id:req.params.thoughtId},
             { $push: {reactions:req.body} },
             { new:true }
         )
             res.json(reaction)
         }catch(err){
-          console.error(err)
+          console.error(err);
+          res.status(500).json(err);
         }
       },
       // Delete to pull and remove a reaction by reactionId value
@@ -96,6 +102,7 @@ module.exports = {
             res.status(200).json({ message: 'Reaction has been successfully deleted' });
         } catch (err) {
             console.error(err);
+            res.status(500).json(err);
         }
       },
 };
